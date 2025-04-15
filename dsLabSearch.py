@@ -93,17 +93,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
 # Function to reset filters
 def reset_filters():
     if 'reset' not in st.session_state:
         st.session_state.reset = True
 
-
 # Function to display tooltip for better user guidance
 def display_tooltip(text, tooltip_text):
     return f'<div class="tooltip">{text} ℹ️<span class="tooltiptext">{tooltip_text}</span></div>'
-
 
 # Function to display a custom metric card
 def metric_card(title, value, delta=None):
@@ -115,7 +112,6 @@ def metric_card(title, value, delta=None):
         {delta_html}
     </div>
     """, unsafe_allow_html=True)
-
 
 # Initialize session state for filters
 if 'reset' in st.session_state and st.session_state.reset:
@@ -137,16 +133,13 @@ col_logo, col_title = st.columns([1, 5])
 with col_logo:
     st.markdown('<div style="font-size:48px;text-align:center">🔬</div>', unsafe_allow_html=True)
 with col_title:
-    st.markdown('<h1 class="main-header">Dhanalakshmi Srinivasan University<br>Laboratory Equipment Search System</h1>',
-                unsafe_allow_html=True)
-    st.markdown(
-        '<p style="color:#666">Version 1.0 - Search and analyze laboratory equipment across all departments</p>',
-        unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Dhanalakshmi Srinivasan University<br>Laboratory Equipment Search System</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#666">Version 1.0 - Search and analyze laboratory equipment across all departments</p>', unsafe_allow_html=True)
 
 # Display a progress bar for better loading UX
 with st.spinner("Loading laboratory equipment data..."):
     progress_bar = st.progress(0)
-
+    
     # Google Sheets link
     sheet_url = "https://docs.google.com/spreadsheets/d/13TE6wJbMV9iDaQaBIKoQOG9rHavqQZKq/export?format=xlsx"
 
@@ -155,23 +148,23 @@ with st.spinner("Loading laboratory equipment data..."):
         for i in range(100):
             time.sleep(0.01)
             progress_bar.progress(i + 1)
-
+        
         # Download the data from the Google Sheets link
         response = requests.get(sheet_url)
         response.raise_for_status()
 
         # Read the Excel file into a DataFrame
         data = pd.read_excel(BytesIO(response.content))
-
+        
         # Clear the progress bar after loading
         progress_bar.empty()
         st.success("Data loaded successfully!")
-
+        
         # Dark mode toggle in sidebar
         st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
         st.sidebar.markdown('<h2 style="text-align:center">Search Controls</h2>', unsafe_allow_html=True)
         dark_mode = st.sidebar.checkbox("Dark Mode", value=st.session_state.dark_mode, key="dark_mode")
-
+        
         if dark_mode:
             # Apply dark mode styling
             st.markdown("""
@@ -196,11 +189,10 @@ with st.spinner("Loading laboratory equipment data..."):
                 }
             </style>
             """, unsafe_allow_html=True)
-
+        
         # Create sidebar filter section with improved styling
         st.sidebar.markdown('<div class="filter-section">', unsafe_allow_html=True)
-        st.sidebar.markdown(display_tooltip("Search Filters", "Use these filters to narrow down equipment results"),
-                            unsafe_allow_html=True)
+        st.sidebar.markdown(display_tooltip("Search Filters", "Use these filters to narrow down equipment results"), unsafe_allow_html=True)
 
         # Add a text search box for more flexibility
         text_search = st.sidebar.text_input(
@@ -248,9 +240,9 @@ with st.spinner("Loading laboratory equipment data..."):
         # Reset button functionality with improved styling
         if st.sidebar.button("Reset All Filters", on_click=reset_filters):
             st.rerun()
-
+            
         st.sidebar.markdown('</div>', unsafe_allow_html=True)  # Close filter section
-
+        
         # Add quick help section for better user guidance
         with st.sidebar.expander("🔍 How to use this app"):
             st.markdown("""
@@ -259,7 +251,7 @@ with st.spinner("Loading laboratory equipment data..."):
             3. **Explore**: Click on charts to filter data
             4. **Download**: Export filtered data as CSV or Excel
             """)
-
+            
         # Add contact information
         st.sidebar.markdown("---")
         st.sidebar.markdown("📧 For support: support@dsu.edu")
@@ -278,8 +270,7 @@ with st.spinner("Loading laboratory equipment data..."):
 
         # Apply other filters
         if equipment_search != "All":
-            filtered_data = filtered_data[
-                filtered_data.iloc[:, 1].fillna('').str.contains(equipment_search, case=False)]
+            filtered_data = filtered_data[filtered_data.iloc[:, 1].fillna('').str.contains(equipment_search, case=False)]
 
         if school_department_search != "All":
             filtered_data = filtered_data[
@@ -290,16 +281,16 @@ with st.spinner("Loading laboratory equipment data..."):
 
         # Create tabs for different views with enhanced styling and icons
         tab1, tab2, tab3, tab4, tab5 = st.tabs([
-            "📋 Data Table",
-            "📊 Column View",
-            "🏫 Department Analytics",
+            "📋 Data Table", 
+            "📊 Column View", 
+            "🏫 Department Analytics", 
             "⚙️ Equipment Distribution",
             "📝 Equipment Details"  # New tab
         ])
 
         with tab1:
             st.markdown('<h2 class="sub-header">Filtered Results - Full Table View</h2>', unsafe_allow_html=True)
-
+            
             if not filtered_data.empty:
                 # Add column selection with better UX
                 with st.expander("Select columns to display", expanded=True):
@@ -344,17 +335,17 @@ with st.spinner("Loading laboratory equipment data..."):
 
         with tab2:
             st.markdown('<h2 class="sub-header">Column-wise View and Analysis</h2>', unsafe_allow_html=True)
-
+            
             if not filtered_data.empty:
                 # Create column selector with improved visualization
                 col1, col2 = st.columns([1, 2])
-
+                
                 with col1:
                     selected_column = st.selectbox(
                         "Select column to analyze:",
                         options=filtered_data.columns.tolist()
                     )
-
+                    
                     # Display selected column data
                     col_data = filtered_data[[selected_column]]
                     st.dataframe(
@@ -362,20 +353,20 @@ with st.spinner("Loading laboratory equipment data..."):
                         use_container_width=True,
                         height=300
                     )
-
+                
                 with col2:
                     # Show visualizations based on column type - enhanced feature
                     if pd.api.types.is_numeric_dtype(filtered_data[selected_column]):
                         st.write("📊 Data Distribution:")
                         fig = px.histogram(
-                            filtered_data,
+                            filtered_data, 
                             x=selected_column,
                             nbins=20,
                             title=f"Distribution of {selected_column}",
                             color_discrete_sequence=['#1E88E5']
                         )
                         st.plotly_chart(fig, use_container_width=True)
-
+                        
                         # Show basic statistics for numeric columns
                         st.write("📈 Basic Statistics:")
                         stats = col_data.describe()
@@ -384,7 +375,7 @@ with st.spinner("Loading laboratory equipment data..."):
                         # For categorical columns, show value counts with visualization
                         value_counts = filtered_data[selected_column].value_counts().reset_index()
                         value_counts.columns = [selected_column, 'Count']
-
+                        
                         fig = px.bar(
                             value_counts,
                             y=selected_column,
@@ -395,7 +386,7 @@ with st.spinner("Loading laboratory equipment data..."):
                         )
                         fig.update_layout(height=min(500, len(value_counts) * 25 + 100))
                         st.plotly_chart(fig, use_container_width=True)
-
+                        
                         # Show unique values count
                         st.metric("Unique Values", filtered_data[selected_column].nunique())
 
@@ -404,20 +395,20 @@ with st.spinner("Loading laboratory equipment data..."):
 
             # Count equipment per department with enhanced visualization
             dept_counts = data.iloc[:, 2].value_counts()
-
+            
             # Allow user to limit the number of departments shown
             with st.expander("Chart Settings"):
                 top_n_depts = st.slider(
-                    "Number of departments to display:",
-                    min_value=5,
-                    max_value=len(dept_counts),
+                    "Number of departments to display:", 
+                    min_value=5, 
+                    max_value=len(dept_counts), 
                     value=min(10, len(dept_counts)),
                     step=1
                 )
-
+            
             # Get top N departments
             top_depts = dept_counts.nlargest(top_n_depts)
-
+            
             # Create horizontal bar chart with improved design
             fig_dept = px.bar(
                 y=top_depts.index,
@@ -441,7 +432,7 @@ with st.spinner("Loading laboratory equipment data..."):
             if 'Cost' in data.columns:
                 dept_value = data.groupby(data.iloc[:, 2])['Cost'].sum().sort_values(ascending=True)
                 top_value_depts = dept_value.nlargest(top_n_depts)
-
+                
                 fig_value = px.bar(
                     y=top_value_depts.index,
                     x=top_value_depts.values,
@@ -458,7 +449,7 @@ with st.spinner("Loading laboratory equipment data..."):
                 )
                 fig_value.update_traces(textposition='outside')
                 st.plotly_chart(fig_value, use_container_width=True)
-
+                
                 # Add a pie chart for department budget allocation - new visualization
                 with st.expander("Department Budget Allocation", expanded=False):
                     fig_pie = px.pie(
@@ -476,7 +467,7 @@ with st.spinner("Loading laboratory equipment data..."):
 
             # Create two columns for layout
             col1, col2 = st.columns(2)
-
+            
             with col1:
                 # Equipment type distribution - horizontal bar chart with enhanced visuals
                 equipment_counts = data.iloc[:, 1].value_counts().head(15)
@@ -496,7 +487,7 @@ with st.spinner("Loading laboratory equipment data..."):
                 )
                 fig_equip.update_traces(texttemplate='%{text}', textposition='outside')
                 st.plotly_chart(fig_equip, use_container_width=True)
-
+            
             with col2:
                 # Measurement purpose distribution with enhanced visualization
                 measure_counts = data.iloc[:, 14].value_counts().head(15)
@@ -520,12 +511,12 @@ with st.spinner("Loading laboratory equipment data..."):
             # Add equipment age analysis if date information is available
             if 'Purchase Date' in data.columns:
                 st.markdown('<h3 class="sub-header">Equipment Age Analysis</h3>', unsafe_allow_html=True)
-
+                
                 data['Purchase Date'] = pd.to_datetime(data['Purchase Date'], errors='coerce')
                 data['Age'] = (pd.Timestamp.now() - data['Purchase Date']).dt.days / 365
-
+                
                 col1, col2 = st.columns(2)
-
+                
                 with col1:
                     # Age distribution histogram with box plot
                     fig_age = px.histogram(
@@ -537,7 +528,7 @@ with st.spinner("Loading laboratory equipment data..."):
                         marginal="box"  # Add a box plot on the margin
                     )
                     st.plotly_chart(fig_age, use_container_width=True)
-
+                
                 with col2:
                     # Equipment value vs age scatter plot - new visualization
                     if 'Cost' in data.columns:
@@ -556,7 +547,7 @@ with st.spinner("Loading laboratory equipment data..."):
         # New tab for detailed equipment information
         with tab5:
             st.markdown('<h2 class="sub-header">Equipment Details</h2>', unsafe_allow_html=True)
-
+            
             if not filtered_data.empty:
                 # Create selection mechanism for individual equipment
                 equipment_list = filtered_data.iloc[:, 1].tolist()
@@ -564,10 +555,10 @@ with st.spinner("Loading laboratory equipment data..."):
                     "Select equipment to view details:",
                     options=equipment_list
                 )
-
+                
                 # Get the row for the selected equipment
                 equipment_data = filtered_data[filtered_data.iloc[:, 1] == selected_equipment].iloc[0]
-
+                
                 # Display equipment details in a more attractive format
                 st.markdown(f"""
                 <div style="background-color: {'#1E1E1E' if dark_mode else '#f8f9fa'}; padding: 20px; border-radius: 10px; margin-top: 20px;">
@@ -582,7 +573,7 @@ with st.spinner("Loading laboratory equipment data..."):
                             <td style="padding: 8px; border-bottom: 1px solid {'#444' if dark_mode else '#ddd'};">{equipment_data.iloc[14]}</td>
                         </tr>
                 """, unsafe_allow_html=True)
-
+                
                 # Add all other equipment details
                 for i, col_name in enumerate(data.columns):
                     if i not in [1, 2, 14]:  # Skip already displayed fields
@@ -594,9 +585,9 @@ with st.spinner("Loading laboratory equipment data..."):
                                 <td style="padding: 8px; border-bottom: 1px solid {'#444' if dark_mode else '#ddd'};">{value}</td>
                             </tr>
                             """, unsafe_allow_html=True)
-
+                
                 st.markdown("</table></div>", unsafe_allow_html=True)
-
+                
                 # Add maintenance history section if available
                 if 'Maintenance Date' in data.columns or 'Last Service Date' in data.columns:
                     with st.expander("Maintenance History", expanded=False):
@@ -606,7 +597,7 @@ with st.spinner("Loading laboratory equipment data..."):
 
         # Add summary statistics at the bottom with improved visualization
         st.markdown('<h2 class="sub-header">Dashboard Summary</h2>', unsafe_allow_html=True)
-
+        
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
@@ -617,7 +608,7 @@ with st.spinner("Loading laboratory equipment data..."):
 
         with col3:
             metric_card("Equipment Types", f"{filtered_data.iloc[:, 1].nunique():,}")
-
+            
         with col4:
             # Calculate percentage of total equipment
             if not filtered_data.empty and not data.empty:
